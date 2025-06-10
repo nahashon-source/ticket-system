@@ -51,13 +51,13 @@
                 <!-- Title -->
                 <div class="mb-3">
                     <label for="title" class="form-label">Title</label>
-                    <input type="text" name="title" id="title" class="form-control" required>
+                    <input type="text" name="title" id="title" class="form-control" placeholder="Enter ticket title" required>
                 </div>
 
                 <!-- Description -->
                 <div class="mb-3">
                     <label for="description" class="form-label">Description</label>
-                    <textarea name="description" id="description" rows="4" class="form-control" required></textarea>
+                    <textarea name="description" id="description" rows="4" class="form-control" placeholder="Provide details about the issue" required></textarea>
                 </div>
 
                 <!-- File Upload -->
@@ -143,6 +143,12 @@
                     previewContainer.appendChild(img);
                 };
                 reader.readAsDataURL(file);
+            } else {
+                // Show file name for non-image files (e.g., PDFs, Word docs)
+                const fileName = document.createElement('span');
+                fileName.classList.add('badge', 'bg-secondary', 'me-2', 'mb-2');
+                fileName.textContent = file.name;
+                previewContainer.appendChild(fileName);
             }
         });
     });

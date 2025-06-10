@@ -20,7 +20,7 @@ class Ticket extends Model
     // Renamed 'use' method to 'user' to avoid PHP reserved word
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class)->withDefault();
     }
 
     // Relationship with File (One to Many)
@@ -39,5 +39,10 @@ class Ticket extends Model
     public function labels()
     {
         return $this->belongsToMany(Label::class);
+    }
+
+    public function agent()
+    {
+        return $this->belongsTo(User::class, 'agent_id');
     }
 }

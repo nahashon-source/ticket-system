@@ -19,6 +19,7 @@ return new class extends Migration
             $table->enum('status', ['open', 'in_progress', 'closed']);
             $table->foreignId('user_id')->constrained()->onDelete('cascade'); // assigned user
             $table->timestamps();
+
         });
     }
 

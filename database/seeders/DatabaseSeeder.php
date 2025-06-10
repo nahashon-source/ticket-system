@@ -15,9 +15,11 @@ class DatabaseSeeder extends Seeder
         // Delete the user if it exists
         \App\Models\User::where('email', 'test@example.com')->delete();
     
+        // Create a user with a default role, e.g., 'regular'
         User::factory()->create([
             'name' => 'Test User',
             'email' => 'test@example.com',
+            'role' => 'regular', // Assigning 'regular' role
         ]);
     
         $this->call([

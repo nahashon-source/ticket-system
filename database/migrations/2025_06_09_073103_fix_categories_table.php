@@ -12,7 +12,6 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('categories', function (Blueprint $table) {
-            $table->unique('name'); // Add unique constraint
         });
     }
 

@@ -1,10 +1,10 @@
 <?php
 
 namespace Database\Seeders;
-use App\Models\Label;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Label;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB; // ✅ this was missing
 
 class LabelSeeder extends Seeder
 {
@@ -13,12 +13,12 @@ class LabelSeeder extends Seeder
      */
     public function run(): void
     {
-        //
-        Label::insert ([
+        DB::table('labels')->truncate();
+
+        Label::insert([
             ['name' => 'Urgent'],
             ['name' => 'Client'],
             ['name' => 'Internal']
         ]);
-
     }
 }

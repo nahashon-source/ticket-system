@@ -11,15 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tickets', function (Blueprint $table) {
+        Schema::create('priorities', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
-            $table->text('description');
-            $table->enum('priority', ['low', 'medium', 'high']);
-            $table->enum('status', ['open', 'in_progress', 'closed']);
-            $table->foreignId('user_id')->constrained()->onDelete('cascade'); // assigned user
+            $table->string('name');
             $table->timestamps();
-
         });
     }
 
@@ -28,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tickets');
+        Schema::dropIfExists('priorities');
     }
 };

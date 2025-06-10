@@ -1,39 +1,58 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\TicketController;
-use App\Http\Controllers\AdminController;
+use App\Http\Controllers\{
+    ProfileController, TicketController, AdminController,
+    CategoryController, PriorityController, LabelController,
+    DashboardController, UserController, LogController
+};
 
-Route::middleware('auth' )->group(function () {
+// Public Route
+Route::view('/', 'welcome')->name('home');
+
+// Authenticated User Routes
+Route::middleware(['auth'])->group(function () {
+
+    // User Dashboard
+    Route::get('/dashboard', [DashboardController::class, 'index'])
+        ->middleware('verified')
+        ->name('dashboard');
+
+    // Profile Management
+    Route::prefix('profile')->name('profile.')->group(function () {
+        Route::get('/', [ProfileController::class, 'edit'])->name('edit');
+        Route::patch('/', [ProfileController::class, 'update'])->name('update');
+        Route::delete('/', [ProfileController::class, 'destroy'])->name('destroy');
+    });
+
+    // Ticket Resource (only: index, create, store, show)
     Route::resource('tickets', TicketController::class)->except(['edit', 'update', 'destroy']);
 
+    // User-specific management pages
+    Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
+    Route::get('/priorities', [PriorityController::class, 'index'])->name('priorities.index');
+    Route::get('/users', [UserController::class, 'index'])->name('users.index');
+    Route::get('/logs', [LogController::class, 'index'])->name('logs.index');
 });
 
-
-Route::get('/', function () {
-    return view('welcome');
-});
-
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
-
+// Admin-only Routes (role:admin middleware)
 Route::middleware(['auth', 'role:admin'])->group(function () {
-    Route::get('/admin', [AdminController::class, 'index']);
+    Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
 });
 
-Route::middleware('auth')->group(function () {
-    Route::get('/tickets', [TicketController::class, 'index'])->name('tickets.index');
-    Route::get('/tickets/create', [TicketController::class, 'create'])->name('tickets.create');
-    Route::post('/tickets', [TicketController::class, 'store'])->name('tickets.store');
-    Route::get('/tickets/{ticket}', [TicketController::class, 'show'])->name('tickets.show');
+// Admin Dashboard & Resource Management (is_admin middleware)
+Route::middleware(['auth', 'is_admin'])->prefix('admin')->name('admin.')->group(function () {
 
+    // Admin Dashboard
+    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+
+    // Resource Controllers
+    Route::resources([
+        'categories' => CategoryController::class,
+        'priorities' => PriorityController::class,
+        'labels'     => LabelController::class,
+    ]);
 });
-require __DIR__.'/auth.php';
+
+// Auth scaffolding routes (Fortify, Breeze, Jetstream, etc.)
+require __DIR__ . '/auth.php';

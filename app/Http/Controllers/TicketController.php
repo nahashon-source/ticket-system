@@ -4,11 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Ticket;
-use App\Models\Category;
-use App\Models\User;
+use App\Models\{Ticket, Category, User, Status, Priority, Label};
+use App\Http\Requests\StoreTicketRequest;
 
-use App\Models\Label;
+
 
 class TicketController extends Controller
 {
@@ -17,66 +16,103 @@ class TicketController extends Controller
         $this->middleware('auth')->only(['index', 'store', 'show', 'create']);
     }
 
-    public function index()
+    public function index(Request $request)
     {
         $user = Auth::user();
-        $tickets = Ticket::where('user_id', $user->id)->with(['categories', 'labels', 'priority', 'status'])->latest()->paginate(10);
-        return view('tickets.index', compact('tickets'));
+
+        $statuses   = Status::all();
+        $priorities = Priority::all();
+        $categories = Category::all();
+
+        $ticketsQuery = Ticket::with(['priority', 'status', 'categories']);
+
+        // Role-based ticket filtering
+        match ($user->role) {
+            'user'  => $ticketsQuery->where('created_by', $user->id),
+            'agent' => $ticketsQuery->where('assigned_user_id', $user->id),
+            default => null,
+        };
+
+        // Apply optional filters
+        $ticketsQuery->when($request->filled('status'), fn ($q) =>
+            $q->where('status_id', $request->status)
+        )->when($request->filled('priority'), fn ($q) =>
+            $q->where('priority_id', $request->priority)
+        )->when($request->filled('category'), fn ($q) =>
+            $q->whereHas('categories', fn ($q) => $q->where('category_id', $request->category))
+        );
+
+        $tickets = $ticketsQuery->paginate(10);
+
+        return view('tickets.index', compact('tickets', 'statuses', 'priorities', 'categories'));
     }
 
     public function create()
-{
-    $users = User::all(); 
-    $categories = Category::all();
-    $labels = Label::all();
-    return view('tickets.create', compact('users', 'categories', 'labels'));
-}
+    {
+        $users      = User::where('role', 'agent')->get();
+        $categories = Category::all();
+        $labels     = Label::all();
+        $users = User::all();
+        $statuses   = Status::all();
+        $priorities = Priority::all();
 
- 
-
-public function store(Request $request)
-{
-    $validated = $request->validate([
-        'title'       => 'required|string|max:255',
-        'description' => 'required|string',
-        'priority'    => 'required|in:low,medium,high',
-        'status'      => 'required|in:open,in_progress,closed',
-        'categories'  => 'nullable|array|exists:categories,id',
-        'labels'      => 'nullable|array|exists:labels,id',
-        'files.*'     => 'nullable|file|mimes:jpg,jpeg,png,pdf,doc,docx|max:2048',
-    ]);
-
-    // Create ticket
-    $ticket = Ticket::create([
-        'title'       => $validated['title'],
-        'description' => $validated['description'],
-        'priority'    => $validated['priority'],
-        'status'      => $validated['status'],
-        'user_id'     => Auth::id(),
-    ]);
-
-    // Attach categories and labels if provided
-    $ticket->categories()->sync($validated['categories'] ?? []);
-    $ticket->labels()->sync($validated['labels'] ?? []);
-
-    // Handle file uploads
-    if ($request->hasFile('files')) {
-        collect($request->file('files'))->each(function ($file) use ($ticket) {
-            $path = $file->store('attachments', 'public');
-            $ticket->files()->create(['path' => $path]);
-        });
+        return view('tickets.create', compact('users', 'categories', 'labels', 'statuses', 'priorities'));
     }
 
-    return redirect()->route('tickets.index')->with('success', 'Ticket created successfully!');
-}
+    public function store(StoreTicketRequest $request)
+    {
+        $validated = $request->validate([
+            'title'             => 'required|string|max:255',
+            'description'       => 'required|string',
+            'priority_id'       => 'required|exists:priorities,id',
+            'status_id'         => 'required|exists:statuses,id',
+            'categories'        => 'nullable|array',
+            'categories.*'      => 'exists:categories,id',
+            'labels'            => 'nullable|array',
+            'labels.*'          => 'exists:labels,id',
+            'assigned_user_id'  => 'nullable|exists:users,id',
+            'files.*'           => 'nullable|file|mimes:jpg,jpeg,png,pdf,doc,docx|max:2048',
+        ]);
 
+        $ticket = Ticket::create([
+            'title'             => $validated['title'],
+            'description'       => $validated['description'],
+            'priority_id'       => $validated['priority_id'],
+            'status_id'         => $validated['status_id'],
+            'assigned_user_id'  => $validated['assigned_user_id'] ?? null,
+            'created_by'        => Auth::id(),
+        ]);
+
+        $ticket->categories()->sync($validated['categories'] ?? []);
+        $ticket->labels()->sync($validated['labels'] ?? []);
+
+        // Handle file uploads
+        if ($request->hasFile('files')) {
+            foreach ($request->file('files') as $file) {
+                $path = $file->store('attachments', 'public');
+                $ticket->files()->create(['path' => $path]);
+            }
+        }
+
+        return redirect()->route('tickets.index')->with('success', 'Ticket created successfully!');
+    }
 
     public function show(Ticket $ticket)
     {
         $user = Auth::user();
-        if ($user->role !== 'admin' && $ticket->user_id !== $user->id) {
-            abort(403, 'Unauthorized access to ticket.');
+
+        // Role-based authorization
+        if (
+            ($user->role === 'user'  && $ticket->created_by !== $user->id) ||
+            ($user->role === 'agent' && $ticket->assigned_user_id !== $user->id)
+        ) {
+            abort(403, 'Unauthorized access.');
         }
+
+    $this->authorize('view', $ticket);
+
+    $ticket->load(['labels', 'categories', 'files']);
+
 
         return view('tickets.show', compact('ticket'));
     }

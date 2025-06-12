@@ -1,52 +1,58 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
+
 use App\Http\Controllers\{
-    ProfileController, TicketController, AdminController,
-    CategoryController, PriorityController, LabelController,
-    DashboardController, UserController, LogController
+    TicketController,
+    CategoryController,
+    PriorityController,
+    LabelController,
+    CommentController,
+    ProfileController,
+    DashboardController,
+    TestController
 };
 
-// Public Route
-Route::view('/', 'welcome')->name('home');
+// Include authentication routes
+require __DIR__.'/auth.php';
 
-// Authenticated User Routes
-Route::middleware(['auth'])->group(function () {
+// Root route - redirect to appropriate dashboard
+Route::get('/', function () {
+    return Auth::check() ? redirect('/dashboard') : redirect('/login');
+});
 
-    // User Dashboard
-    Route::get('/dashboard', [DashboardController::class, 'index'])
-        ->middleware('verified')
-        ->name('dashboard');
+// Authenticated users routes
+Route::middleware(['web', 'auth'])->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    // Profile Management
-    Route::prefix('profile')->name('profile.')->group(function () {
-        Route::get('/', [ProfileController::class, 'edit'])->name('edit');
-        Route::patch('/', [ProfileController::class, 'update'])->name('update');
-        Route::delete('/', [ProfileController::class, 'destroy'])->name('destroy');
+    // User-only ticket routes
+    Route::get('/tickets', [TicketController::class, 'index'])->name('tickets.index');
+    Route::get('/tickets/create', [TicketController::class, 'create'])->name('tickets.create');
+    Route::post('/tickets', [TicketController::class, 'store'])->name('tickets.store');
+    Route::get('/tickets/{ticket}', [TicketController::class, 'show'])->name('tickets.show');
+    Route::get('/tickets/{ticket}/edit', [TicketController::class, 'edit'])->name('tickets.edit');
+    Route::put('/tickets/{ticket}', [TicketController::class, 'update'])->name('tickets.update');
+    Route::delete('/tickets/{ticket}', [TicketController::class, 'destroy'])->name('tickets.destroy');
+
+    // User-only category viewing (no manage rights)
+    Route::prefix('user')->name('user.')->group(function () {
+        Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
+        Route::get('/priorities', [PriorityController::class, 'index'])->name('priorities.index');
+        Route::get('/labels', [LabelController::class, 'index'])->name('labels.index');
     });
 
-    // Ticket Resource (only: index, create, store, show)
-    Route::resource('tickets', TicketController::class)->except(['edit', 'update', 'destroy']);
+    // Comments (resource-based)
+    Route::resource('comments', CommentController::class)->only(['store', 'destroy']);
 
-    // User-specific management pages
-    Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
-    Route::get('/priorities', [PriorityController::class, 'index'])->name('priorities.index');
-    Route::get('/users', [UserController::class, 'index'])->name('users.index');
-    Route::get('/logs', [LogController::class, 'index'])->name('logs.index');
+    // Profile
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-// Admin-only Routes (role:admin middleware)
-Route::middleware(['auth', 'role:admin'])->group(function () {
-    Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
-});
-
-// Admin Dashboard & Resource Management (is_admin middleware)
+// Admin-only routes
 Route::middleware(['auth', 'is_admin'])->prefix('admin')->name('admin.')->group(function () {
-
-    // Admin Dashboard
-    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
-
-    // Resource Controllers
     Route::resources([
         'categories' => CategoryController::class,
         'priorities' => PriorityController::class,
@@ -54,5 +60,5 @@ Route::middleware(['auth', 'is_admin'])->prefix('admin')->name('admin.')->group(
     ]);
 });
 
-// Auth scaffolding routes (Fortify, Breeze, Jetstream, etc.)
-require __DIR__ . '/auth.php';
+// Validator test route (accessible to all for now — can wrap in 'auth' if needed)
+Route::get('/test-validator', [TestController::class, 'testValidator']);

@@ -52,6 +52,16 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
+    ];
+
+    /**
+     * The attributes that have default values.
+     *
+     * @var array
+     */
+    protected $attributes = [
+        'role' => 'user',
     ];
 
     /**

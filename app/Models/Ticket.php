@@ -44,8 +44,9 @@ class Ticket extends Model
     protected $fillable = [
         'title',
         'description',
-        'priority',
-        'status',
+        'priority_id',
+        'status_id',
+        'assigned_user_id',
         'user_id',
     ];
 
@@ -87,5 +88,31 @@ class Ticket extends Model
     {
         return $this->belongsTo(Status::class);
 
+    }
+
+
+    public function scopeApplyUserFilter($query, $user)
+    {
+        return match ($user->role) {
+            'user'  => $query->where('user_id', $user->id),
+            'agent' => $query->where('assigned_user_id', $user->id),
+            default => $query,
+        };
+    }
+
+    public function scopeApplyRequestFilters($query, $request)
+    {
+        return $query
+            ->when($request->filled('status'), fn ($q) =>
+                $q->where('status_id', $request->status)
+            )
+            ->when($request->filled('priority'), fn ($q) =>
+                $q->where('priority_id', $request->priority)
+            )
+            ->when($request->filled('category'), fn ($q) =>
+                $q->whereHas('categories', fn ($q) =>
+                    $q->where('category_id', $request->category)
+                )
+            );
     }
 }

@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Laravel Ticket System</title>
 
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Vite CSS/JS compiled with Bootstrap & Alpine -->
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body>
     <header class="bg-primary text-white p-3 mb-4">
@@ -22,8 +22,5 @@
     <main class="container">
         @yield('content')
     </main>
-
-    <!-- Bootstrap 5 JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

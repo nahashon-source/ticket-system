@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Validator;
+
 
 class ProfileController extends Controller
 {
@@ -24,18 +26,51 @@ class ProfileController extends Controller
     /**
      * Update the user's profile information.
      */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
-    {
-        $request->user()->fill($request->validated());
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
-        }
 
-        $request->user()->save();
 
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
+public function update(Request $request): RedirectResponse
+{
+    // dd('Validator::class');
+    \Log::info('Profile update request received.');
+
+
+    $user = Auth::user();
+
+    if (!$user) {
+        throw new \Exception('No authenticated user found.');
     }
+
+    $validator = Validator::make($request->all(), [
+        'name' => ['required', 'string', 'max:255'],
+        'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $user->id],
+    ]);
+
+    if ($validator->fails()) {
+        return redirect()->back()
+                         ->withErrors($validator)
+                         ->withInput();
+    }
+
+    $validatedData = $validator->validated();
+
+    $user->fill($validatedData);
+
+    if ($user->isDirty('email')) {
+        $user->email_verified_at = null;
+    }
+
+    $user->save();
+    return Redirect::route('profile.edit')->with('success', 'Profile updated successfully.');
+
+
+}
+
+
+  
+     
+
+ 
 
     /**
      * Delete the user's account.

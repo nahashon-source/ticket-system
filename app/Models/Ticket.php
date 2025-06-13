@@ -35,6 +35,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;  // Fixed the typo here
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Ticket whereTitle($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Ticket whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Ticket whereUserId($value)
+ * @property int $priority_id
+ * @property int $status_id
+ * @property int|null $assigned_user_id
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Ticket applyRequestFilters($request)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Ticket applyUserFilter($user)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Ticket whereAssignedUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Ticket wherePriorityId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Ticket whereStatusId($value)
  * @mixin \Eloquent
  */
 class Ticket extends Model

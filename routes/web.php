@@ -37,9 +37,9 @@ Route::middleware(['web', 'auth'])->group(function () {
 
     // User-only category viewing (no manage rights)
     Route::prefix('user')->name('user.')->group(function () {
-        Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
-        Route::get('/priorities', [PriorityController::class, 'index'])->name('priorities.index');
-        Route::get('/labels', [LabelController::class, 'index'])->name('labels.index');
+        Route::get('/categories', [CategoryController::class, 'categories'])->name('categories');
+        Route::get('/priorities', [PriorityController::class, 'priorities'])->name('priorities');
+        Route::get('/labels', [LabelController::class, 'labels'])->name('labels');
     });
 
     // Comments (resource-based)
@@ -62,3 +62,9 @@ Route::middleware(['auth', 'is_admin'])->prefix('admin')->name('admin.')->group(
 
 // Validator test route (accessible to all for now — can wrap in 'auth' if needed)
 Route::get('/test-validator', [TestController::class, 'testValidator']);
+Route::get('/test', function () {
+    return view('test');
+});
+Route::patch('/test', function () {
+    return 'PATCH received';
+})->name('test.patch');

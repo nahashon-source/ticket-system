@@ -53,18 +53,17 @@ Route::middleware(['web', 'auth'])->group(function () {
 
 // Admin-only routes
 Route::middleware(['auth', 'is_admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::resources([
-        'categories' => CategoryController::class,
-        'priorities' => PriorityController::class,
-        'labels'     => LabelController::class,
-    ]);
+    Route::resource('categories', CategoryController::class);
+    Route::resource('priorities', PriorityController::class);
+
 });
+
 
 // Validator test route (accessible to all for now — can wrap in 'auth' if needed)
 Route::get('/test-validator', [TestController::class, 'testValidator']);
-Route::get('/test', function () {
-    return view('test');
-});
-Route::patch('/test', function () {
-    return 'PATCH received';
-})->name('test.patch');
+// Route::get('/test', function () {
+//     return view('test');
+// });
+// Route::patch('/test', function () {
+//     return 'PATCH received';
+// })->name('test.patch');

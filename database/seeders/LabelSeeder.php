@@ -13,12 +13,13 @@ class LabelSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('labels')->truncate();
-
-        Label::insert([
-            ['name' => 'Urgent'],
-            ['name' => 'Client'],
-            ['name' => 'Internal']
-        ]);
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        \App\Models\Label::truncate();
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+    
+        \App\Models\Label::updateOrCreate(['name' => 'Urgent']);
+        \App\Models\Label::updateOrCreate(['name' => 'Client']);
+        \App\Models\Label::updateOrCreate(['name' => 'Internal']);
+        
     }
 }

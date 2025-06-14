@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Category;
 use App\Models\Label;
@@ -14,18 +13,16 @@ class CategorySeeder extends Seeder
      */
     public function run(): void
     {
-        //
-        Category::insert([
-            ['name' => 'Bug'],
-            ['name' => 'Feature Request'],
-            ['name' => 'UI/UX']
-        ]);
-        
-        Label::insert([
-            ['name' => 'Urgent'],
-            ['name' => 'Client'],
-            ['name' => 'Internal']
-        ]);
-        
+        // Seed categories safely
+        $categories = ['Bug', 'Feature Request', 'UI/UX'];
+        foreach ($categories as $categoryName) {
+            Category::updateOrCreate(['name' => $categoryName]);
+        }
+
+        // Seed labels safely
+        $labels = ['Urgent', 'Client', 'Internal'];
+        foreach ($labels as $labelName) {
+            Label::updateOrCreate(['name' => $labelName]);
+        }
     }
 }

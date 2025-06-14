@@ -1,35 +1,18 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add New Category</title>
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
+@extends('layouts.app')
 
-<div class="container my-5">
-    <h2 class="mb-4">Add New Category</h2>
+@section('content')
+<div class="container">
+    <h1>New Category</h1>
 
-    <form action="{{ route('categories.store') }}" method="POST">
+    <form action="{{ route('admin.categories.store') }}" method="POST">
         @csrf
-
         <div class="mb-3">
-            <label for="name" class="form-label">Category Name</label>
-            <input type="text" name="name" id="name" class="form-control" required>
-
-            @error('name')
-                <div class="text-danger mt-1">{{ $message }}</div>
-            @enderror
+            <label>Name</label>
+            <input type="text" name="name" value="{{ old('name') }}" class="form-control" required>
+            @error('name') <small class="text-danger">{{ $message }}</small> @enderror
         </div>
 
-        <button class="btn btn-primary">Save</button>
-        <a href="{{ route('categories.index') }}" class="btn btn-secondary">Cancel</a>
+        <button type="submit" class="btn btn-success">Create</button>
     </form>
 </div>
-
-<!-- Bootstrap 5 JS (if needed) -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+@endsection

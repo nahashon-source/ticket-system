@@ -49,6 +49,8 @@ class TicketController extends Controller
     public function create()
     {
         $user = Auth::user();
+
+        
         
         // Only get agents if user is admin
         $users = $user && $user->role === 'admin'
@@ -63,7 +65,6 @@ class TicketController extends Controller
         return view('tickets.create', compact('users', 'categories', 'labels', 'statuses', 'priorities'));
     }
 
-    // TicketController.php
 
 
 public function store(Request $request)

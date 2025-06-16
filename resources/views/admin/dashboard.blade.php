@@ -1,57 +1,56 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
-    <!-- Bootstrap 5 CSS via CDN -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
+@extends('layouts.app')
 
-<div class="container my-5">
-    <h1 class="mb-4">Admin Dashboard</h1>
+@section('content')
+<div class="container mx-auto">
+    <h1 class="text-2xl font-bold mb-6">Admin Dashboard</h1>
 
-    <div class="row">
-        <div class="col-md-3">
-            <div class="card text-bg-primary mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">Total Tickets</h5>
-                    <p class="card-text fs-4">{{ $totalTickets }}</p>
-                </div>
-            </div>
+    <div class="grid grid-cols-4 gap-4 mb-8">
+        <div class="p-4 bg-blue-100 rounded">
+            <h2 class="text-lg font-semibold">Total Tickets</h2>
+            <p class="text-2xl">{{ $ticketCount }}</p>
         </div>
-
-        <div class="col-md-3">
-            <div class="card text-bg-success mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">Open Tickets</h5>
-                    <p class="card-text fs-4">{{ $openTickets }}</p>
-                </div>
-            </div>
+        <div class="p-4 bg-yellow-100 rounded">
+            <h2 class="text-lg font-semibold">Open Tickets</h2>
+            <p class="text-2xl">{{ $openTickets }}</p>
         </div>
-
-        <div class="col-md-3">
-            <div class="card text-bg-warning mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">In Progress</h5>
-                    <p class="card-text fs-4">{{ $inProgressTickets }}</p>
-                </div>
-            </div>
+        <div class="p-4 bg-orange-100 rounded">
+            <h2 class="text-lg font-semibold">Pending Tickets</h2>
+            <p class="text-2xl">{{ $pendingTickets }}</p>
         </div>
-
-        <div class="col-md-3">
-            <div class="card text-bg-secondary mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">Closed Tickets</h5>
-                    <p class="card-text fs-4">{{ $closedTickets }}</p>
-                </div>
-            </div>
+        <div class="p-4 bg-green-100 rounded">
+            <h2 class="text-lg font-semibold">Closed Tickets</h2>
+            <p class="text-2xl">{{ $closedTickets }}</p>
+        </div>
+        <div class="p-4 bg-purple-100 rounded col-span-4">
+            <h2 class="text-lg font-semibold">Registered Users</h2>
+            <p class="text-2xl">{{ $userCount }}</p>
         </div>
     </div>
-</div>
 
-<!-- Bootstrap 5 JS via CDN (if needed) -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+    <h2 class="text-xl font-semibold mb-4">Recent Tickets</h2>
+    <table class="table-auto w-full bg-white rounded shadow">
+        <thead>
+            <tr>
+                <th class="px-4 py-2 border">#</th>
+                <th class="px-4 py-2 border">Title</th>
+                <th class="px-4 py-2 border">Status</th>
+                <th class="px-4 py-2 border">Created At</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse ($recentTickets as $ticket)
+                <tr>
+                    <td class="border px-4 py-2">{{ $ticket->id }}</td>
+                    <td class="border px-4 py-2">{{ $ticket->title }}</td>
+                    <td class="border px-4 py-2">{{ $ticket->status_id }}</td>
+                    <td class="border px-4 py-2">{{ $ticket->created_at->diffForHumans() }}</td>
+                </tr>
+            @empty
+                <tr>
+                    <td class="border px-4 py-2 text-center" colspan="4">No tickets found</td>
+                </tr>
+            @endforelse
+        </tbody>
+    </table>
+</div>
+@endsection

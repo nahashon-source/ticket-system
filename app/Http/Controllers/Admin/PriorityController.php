@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Priority;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class PriorityController extends Controller
 {
@@ -21,13 +22,22 @@ class PriorityController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
+        $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255|unique:priorities,name'
         ]);
+        
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
 
-        Priority::create($validated);
+        Priority::create($validator->validated());
 
         return redirect()->route('admin.priorities.index')->with('success', 'Priority created.');
+    }
+
+    public function show(Priority $priority)
+    {
+        return view('admin.priorities.show', compact('priority'));
     }
 
     public function edit(Priority $priority)
@@ -37,11 +47,15 @@ class PriorityController extends Controller
 
     public function update(Request $request, Priority $priority)
     {
-        $validated = $request->validate([
+        $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255|unique:priorities,name,' . $priority->id
         ]);
+        
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
 
-        $priority->update($validated);
+        $priority->update($validator->validated());
 
         return redirect()->route('admin.priorities.index')->with('success', 'Priority updated.');
     }

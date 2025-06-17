@@ -27,7 +27,7 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => ['required', 'string', 'email'],
+            'email' => ['required', 'email'],
             'password' => ['required', 'string'],
         ];
     }
@@ -41,14 +41,25 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
+        $credentials = $this->only('email', 'password');
+        
+        // Debug: Log what we received
+        \Log::info('Login attempt debug', [
+            'email' => $credentials['email'] ?? 'NOT_SET',
+            'password_length' => isset($credentials['password']) ? strlen($credentials['password']) : 'NOT_SET',
+            'all_input' => $this->all()
+        ]);
+
+        if (! Auth::attempt($credentials, $this->boolean('remember'))) {
+            \Log::warning('Login failed debug', $credentials);
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
                 'email' => trans('auth.failed'),
             ]);
         }
-
+        
+        \Log::info('Login successful');
         RateLimiter::clear($this->throttleKey());
     }
 

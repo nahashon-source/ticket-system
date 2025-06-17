@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('content')
 <div class="container">
@@ -22,6 +22,7 @@
                 <tr>
                     <td>{{ $priority->name }}</td>
                     <td>
+                        <a href="{{ route('admin.priorities.show', $priority) }}" class="btn btn-sm btn-info">View</a>
                         <a href="{{ route('admin.priorities.edit', $priority) }}" class="btn btn-sm btn-warning">Edit</a>
 
                         <form action="{{ route('admin.priorities.destroy', $priority) }}" method="POST" class="d-inline"
@@ -30,7 +31,6 @@
                             @method('DELETE')
                             <button class="btn btn-sm btn-danger">Delete</button>
                         </form>
-
                     </td>
                 </tr>
             @empty

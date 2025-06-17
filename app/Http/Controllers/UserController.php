@@ -6,7 +6,7 @@ use App\Models\Category;
 use App\Models\Priority;
 use App\Models\Label;
 
-class UserViewController extends Controller
+class UserController extends Controller
 {
     public function categories()
     {

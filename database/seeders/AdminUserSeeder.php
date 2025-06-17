@@ -16,17 +16,40 @@ class AdminUserSeeder extends Seeder
      */
     public function run(): void
     {
-        if(!user::where('email', 'MlQ2d@example.com')->exists()){
-             //
-        User::create([
-            'name' => 'Admin',
-            'email' => 'MlQ2d@example.com',
-            'password' => Hash::make('password'),
-            'role' => 'admin',
+        // Create Super Admin
+        if (!User::where('email', 'admin@example.com')->exists()) {
+            User::create([
+                'name' => 'Super Admin',
+                'email' => 'admin@example.com',
+                'password' => Hash::make('password123'),
+                'role' => 'admin',
+            ]);
             
-        ]);
-            
+            echo "Super Admin created: admin@example.com / password123\n";
         }
-       
+        
+        // Create Regular Admin
+        if (!User::where('email', 'admin2@example.com')->exists()) {
+            User::create([
+                'name' => 'Admin User',
+                'email' => 'admin2@example.com',
+                'password' => Hash::make('admin123'),
+                'role' => 'admin',
+            ]);
+            
+            echo "Admin User created: admin2@example.com / admin123\n";
+        }
+        
+        // Create Test User
+        if (!User::where('email', 'user@example.com')->exists()) {
+            User::create([
+                'name' => 'Test User',
+                'email' => 'user@example.com',
+                'password' => Hash::make('user123'),
+                'role' => 'user',
+            ]);
+            
+            echo "Test User created: user@example.com / user123\n";
+        }
     }
 }

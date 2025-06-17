@@ -1,34 +1,36 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Ticket Support System')</title>
-    <!-- Tailwind CSS CDN (for quick styling) -->
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100 text-gray-800">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <nav class="bg-white shadow mb-6">
-        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
-            <h1 class="text-2xl font-bold">Ticket System</h1>
-            <div>
-                <a href="/dashboard" class="text-blue-600 hover:underline mr-4">Dashboard</a>
-                <a href="/categories" class="text-blue-600 hover:underline mr-4">Categories</a>
-                <a href="/priorities" class="text-blue-600 hover:underline mr-4">Priorities</a>
-                <a href="/users" class="text-blue-600 hover:underline mr-4">Users</a>
-                <a href="/logs" class="text-blue-600 hover:underline">Logs</a>
-            </div>
+        <title>{{ config('app.name', 'Laravel') }}</title>
+
+        <!-- Fonts -->
+        <link rel="preconnect" href="https://fonts.bunny.net">
+        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+
+        <!-- Scripts -->
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
+    </head>
+    <body class="font-sans antialiased">
+        <div class="min-h-screen bg-gray-100">
+            @include('layouts.navigation')
+
+            <!-- Page Heading -->
+            @isset($header)
+                <header class="bg-white shadow">
+                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                        {{ $header }}
+                    </div>
+                </header>
+            @endisset
+
+            <!-- Page Content -->
+            <main>
+                {{ $slot }}
+            </main>
         </div>
-    </nav>
-
-    <div class="max-w-7xl mx-auto px-4">
-        @yield('content')
-    </div>
-
-    <footer class="text-center text-gray-500 mt-12 py-6 border-t">
-        &copy; {{ date('Y') }} Ticket Support System
-    </footer>
-
-</body>
+    </body>
 </html>

@@ -12,33 +12,33 @@ use App\Http\Controllers\{
     DashboardController,
     TestController,
     AdminDashboardController,
-    Auth\AuthenticatedSessionController
+    Auth\AuthenticatedSessionController,
+    Auth\RegisteredUserController
 };
 
 // ====================
-// Authentication Routes
+// Public (Guest) Routes
 // ====================
+Route::middleware(['web'])->group(function () {
 
-// Login and logout
-Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');
-Route::post('/login', [AuthenticatedSessionController::class, 'store'])->name('login.post');
-Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
+    // Auth routes are handled in routes/auth.php
 
-// ====================
-// Root Redirect
-// ====================
-Route::get('/', function () {
-    return Auth::check() ? redirect('/dashboard') : redirect('/login');
+    // Root Redirect
+    Route::get('/', function () {
+        return Auth::check() ? redirect('/dashboard') : redirect('/login');
+    });
+
+    // Test / Utility Routes
+    Route::get('/test-validator', [TestController::class, 'testValidator']);
 });
 
 // ====================
 // Authenticated User Routes
 // ====================
 Route::middleware(['web', 'auth'])->group(function () {
-    // Dashboard
+
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    // User-only ticket routes
     Route::get('/tickets', [TicketController::class, 'index'])->name('tickets.index');
     Route::get('/tickets/create', [TicketController::class, 'create'])->name('tickets.create');
     Route::post('/tickets', [TicketController::class, 'store'])->name('tickets.store');
@@ -47,17 +47,14 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::put('/tickets/{ticket}', [TicketController::class, 'update'])->name('tickets.update');
     Route::delete('/tickets/{ticket}', [TicketController::class, 'destroy'])->name('tickets.destroy');
 
-    // User-only category viewing routes
     Route::prefix('user')->name('user.')->group(function () {
         Route::get('/categories', [CategoryController::class, 'categories'])->name('categories');
         Route::get('/priorities', [PriorityController::class, 'priorities'])->name('priorities');
         Route::get('/labels', [LabelController::class, 'labels'])->name('labels');
     });
 
-    // Comments (resource-based)
     Route::resource('comments', CommentController::class)->only(['store', 'destroy']);
 
-    // Profile routes
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -66,19 +63,12 @@ Route::middleware(['web', 'auth'])->group(function () {
 // ====================
 // Admin-only Routes
 // ====================
-Route::middleware(['auth', 'is_admin'])->prefix('admin')->name('admin.')->group(function () {
-    // Admin dashboard
+Route::middleware(['web', 'auth', 'is_admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
-
-    // Admin management routes
     Route::resource('categories', CategoryController::class);
     Route::resource('priorities', PriorityController::class);
     Route::resource('labels', LabelController::class);
 });
 
-// ====================
-// Test / Utility Routes
-// ====================
-
-// Validator test route (accessible to all)
-Route::get('/test-validator', [TestController::class, 'testValidator']);
+// Include authentication routes
+require __DIR__.'/auth.php';

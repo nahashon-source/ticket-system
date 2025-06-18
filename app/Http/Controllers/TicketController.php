@@ -57,10 +57,11 @@ class TicketController extends Controller
             ? User::where('role', 'agent')->get()
             : collect();
     
-        $categories = Category::all()->unique('name');
+        $categories = Category::all();//  ->unique('name');
         $labels     = Label::all();
-        $statuses   = Status::all()->unique('name');
-        $priorities = Priority::all()->unique('name');
+        $statuses   = Status::all();//->unique('name');
+        $priorities = Priority::all();//->unique('name');
+        $users = User::all();
     
         return view('tickets.create', compact('users', 'categories', 'labels', 'statuses', 'priorities'));
     }
@@ -127,4 +128,46 @@ public function store(Request $request)
 
         return view('tickets.show', compact('ticket'));
     }
+    public function filterByStatus($statusId)
+{
+    $user = Auth::user();
+
+    $statuses   = Status::all();
+    $priorities = Priority::all();
+    $categories = Category::all();
+
+    $ticketsQuery = Ticket::query()->applyUserFilter($user)->applyRequestFilters(request());
+
+    // Role-based ticket filtering
+    match ($user->role) {
+        'user'  => $ticketsQuery->where('user_id', $user->id),
+        'agent' => $ticketsQuery->where('assigned_user_id', $user->id),
+        default => null,
+    };
+
+    $tickets = $ticketsQuery->where('status_id', $statusId)->paginate(10);
+
+    return view('tickets.index', compact('tickets', 'statuses', 'priorities', 'categories'));
+}
+
+public function filterByPriority($priorityId)
+{
+    $user = Auth::user();
+
+    $statuses   = Status::all();
+    $priorities = Priority::all();
+    $categories = Category::all();
+
+    $ticketsQuery = Ticket::query()->applyUserFilter($user)->applyRequestFilters(request());
+
+    match ($user->role) {
+        'user'  => $ticketsQuery->where('user_id', $user->id),
+        'agent' => $ticketsQuery->where('assigned_user_id', $user->id),
+        default => null,
+    };
+
+    $tickets = $ticketsQuery->where('priority_id', $priorityId)->paginate(10);
+
+    return view('tickets.index', compact('tickets', 'statuses', 'priorities', 'categories'));
+}
 }

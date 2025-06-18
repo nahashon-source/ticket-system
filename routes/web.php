@@ -20,18 +20,8 @@ use App\Http\Controllers\{
 // Public (Guest) Routes
 // ====================
 Route::middleware(['web'])->group(function () {
-
     // Auth routes are handled in routes/auth.php
 
-    // Root Redirect
-    Route::get('/', function () {
-        return Auth::check() ? redirect('/dashboard') : redirect('/login');
-    });
-
-    // Test / Utility Routes
-    Route::get('/test-validator', [TestController::class, 'testValidator']);
-    
-    // Test login route
     Route::get('/test-login', function() {
         $credentials = ['email' => 'admin@example.com', 'password' => 'password123'];
         if (Auth::attempt($credentials)) {
@@ -41,28 +31,20 @@ Route::middleware(['web'])->group(function () {
             return 'Login FAILED!';
         }
     });
-    
-    // Simple login form for testing
+
     Route::get('/simple-login', function() {
         return '
         <form method="POST" action="/simple-login-post">
             <input type="hidden" name="_token" value="' . csrf_token() . '">
-            <div>
-                <label>Email:</label><br>
-                <input type="email" name="email" required>
-            </div><br>
-            <div>
-                <label>Password:</label><br>
-                <input type="password" name="password" required>
-            </div><br>
+            <div><label>Email:</label><br><input type="email" name="email" required></div><br>
+            <div><label>Password:</label><br><input type="password" name="password" required></div><br>
             <button type="submit">Login</button>
         </form>
         ';
     });
-    
+
     Route::post('/simple-login-post', function(\Illuminate\Http\Request $request) {
         $credentials = $request->only('email', 'password');
-        
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
             return 'Simple Login SUCCESS! User: ' . $user->name . ' (' . $user->email . ') - Role: ' . $user->role;
@@ -70,8 +52,7 @@ Route::middleware(['web'])->group(function () {
             return 'Simple Login FAILED! Email: ' . $request->email . ' Password Length: ' . strlen($request->password);
         }
     });
-    
-    // Debug auth status
+
     Route::get('/debug-auth', function() {
         if (Auth::check()) {
             $user = Auth::user();
@@ -86,7 +67,6 @@ Route::middleware(['web'])->group(function () {
 // Authenticated User Routes
 // ====================
 Route::middleware(['web', 'auth'])->group(function () {
-
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::get('/tickets', [TicketController::class, 'index'])->name('tickets.index');
@@ -96,6 +76,12 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/tickets/{ticket}/edit', [TicketController::class, 'edit'])->name('tickets.edit');
     Route::put('/tickets/{ticket}', [TicketController::class, 'update'])->name('tickets.update');
     Route::delete('/tickets/{ticket}', [TicketController::class, 'destroy'])->name('tickets.destroy');
+    Route::get('/tickets/status/{statusId}', [TicketController::class, 'filterByStatus'])->name('tickets.filter.status');
+    Route::get('/tickets/priority/{priorityId}', [TicketController::class, 'filterByPriority'])->name('tickets.filter.priority');
+
+    // 🔽 NEW Routes you wanted
+    Route::get('/tickets/status/{status}', [TicketController::class, 'filterByStatus'])->name('tickets.status');
+    Route::get('/tickets/priority/high', [TicketController::class, 'highPriority'])->name('tickets.high');
 
     Route::prefix('user')->name('user.')->group(function () {
         Route::get('/categories', [CategoryController::class, 'categories'])->name('categories');
@@ -121,5 +107,7 @@ Route::middleware(['web', 'auth', 'is_admin'])->prefix('admin')->name('admin.')-
     Route::resource('users', \App\Http\Controllers\Admin\UserController::class)->except(['create', 'store']);
 });
 
-// Include authentication routes
+// ====================
+// Auth Scaffolding
+// ====================
 require __DIR__.'/auth.php';

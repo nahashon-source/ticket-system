@@ -35,18 +35,22 @@ class PriorityController extends Controller
         return redirect()->route('admin.priorities.index')->with('success', 'Priority created.');
     }
 
-    public function show(Priority $priority)
+    public function show($priority)
     {
+        $priority = Priority::findOrFail($priority);
         return view('admin.priorities.show', compact('priority'));
     }
 
-    public function edit(Priority $priority)
+    public function edit($priority)
     {
+        $priority = Priority::findOrFail($priority);
         return view('admin.priorities.edit', compact('priority'));
     }
 
-    public function update(Request $request, Priority $priority)
+    public function update(Request $request, $priority)
     {
+        $priority = Priority::findOrFail($priority);
+        
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255|unique:priorities,name,' . $priority->id
         ]);
@@ -60,8 +64,9 @@ class PriorityController extends Controller
         return redirect()->route('admin.priorities.index')->with('success', 'Priority updated.');
     }
 
-    public function destroy(Priority $priority)
+    public function destroy($priority)
     {
+        $priority = Priority::findOrFail($priority);
         $priority->delete();
 
         return redirect()->route('admin.priorities.index')->with('success', 'Priority deleted.');

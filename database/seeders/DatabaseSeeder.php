@@ -27,6 +27,9 @@ class DatabaseSeeder extends Seeder
             CategorySeeder::class,
             LabelSeeder::class,
             AdminSeeder::class,
+            PrioritySeeder::class,
+            StatusSeeder::class,
+            StatusesTableSeeder::class,
         ]);
     }
 }

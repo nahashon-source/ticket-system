@@ -14,12 +14,15 @@ class StatusSeeder extends Seeder
      */
     public function run(): void
     {
-        //
-        Status::insert([
-            ['name' => 'Open'],
-            ['name' => 'In Progress'],
-            ['name' => 'Closed'],
-        ]);
-        
+        Status::upsert(
+            [
+                ['name' => 'Open'],
+                ['name' => 'In Progress'],
+                ['name' => 'Resolved'],
+                ['name' => 'Closed'],
+            ],
+            ['name'],
+            ['name']
+        );
     }
 }

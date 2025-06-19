@@ -11,15 +11,16 @@ class PrioritySeeder extends Seeder
 {
     /**
      * Run the database seeds.
-     */
-    public function run(): void
-    {
-        //
-        Priority::insert([
+     */public function run(): void
+{
+    Priority::upsert(
+        [
             ['name' => 'Low'],
             ['name' => 'Medium'],
             ['name' => 'High'],
-            ['name' => 'Urgent'],
-        ]);
-    }
+        ],
+        ['name'],
+        ['name']  
+    );
+}
 }

@@ -84,7 +84,7 @@ class Ticket extends Model
 
     public function agent()
     {
-        return $this->belongsTo(User::class, 'agent_id');
+        return $this->belongsTo(User::class, 'assigned_user_id');
     }
 
     public function priority()
@@ -94,7 +94,7 @@ class Ticket extends Model
 
     public function status ()
     {
-        return $this->belongsTo(Status::class);
+        return $this->belongsTo(Status::class, 'status_id');
 
     }
 

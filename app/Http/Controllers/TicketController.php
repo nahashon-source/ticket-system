@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\{Ticket, Category, User, Status, Priority, Label};
 use App\Http\Requests\StoreTicketRequest;
+use Illuminate\Support\Facades\Validator;
+
+
 
 class TicketController extends Controller
 {
@@ -61,7 +64,7 @@ class TicketController extends Controller
         $labels     = Label::all();
         $statuses   = Status::all();//->unique('name');
         $priorities = Priority::all();//->unique('name');
-        $users = User::all();
+        // $users = User::all();
     
         return view('tickets.create', compact('users', 'categories', 'labels', 'statuses', 'priorities'));
     }
@@ -170,4 +173,16 @@ public function filterByPriority($priorityId)
 
     return view('tickets.index', compact('tickets', 'statuses', 'priorities', 'categories'));
 }
+public function close (Ticket $ticket)
+{
+    $ticket->status_id = 3;
+    $ticket->save();
+    return redirect()->back()->with('success', 'Ticket closed successfully!');
+}
+
+public function updateStatus(Request $request, Ticket $ticket)
+{
+    
+}
+
 }

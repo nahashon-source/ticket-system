@@ -7,12 +7,19 @@
 
     <title>@yield('title', config('app.name', 'Laravel'))</title>
 
-    <!-- Fonts -->
+    {{-- Fonts --}}
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
-    <!-- Styles & Scripts -->
+    {{-- Bootstrap CSS CDN --}}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    {{-- Tailwind + App CSS via Vite --}}
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    {{-- Optional Bootstrap JS (if needed for dropdowns/modals) --}}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
+
 </head>
 <body class="font-sans antialiased bg-gray-100">
 
@@ -31,6 +38,13 @@
     {{-- Page Content --}}
     <main class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+         {{-- ✅ Success Flash Message --}}
+        @if (session('success'))
+            <div class="alert alert-success alert-dismissible fade show mt-2" role="alert">
+                {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
             @yield('content')
         </div>
     </main>

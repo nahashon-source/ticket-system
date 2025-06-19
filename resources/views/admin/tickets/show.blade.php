@@ -53,20 +53,6 @@
         </div>
     @endif
 
-    {{-- ✅ Close Ticket Button --}}
-    @if ($ticket->status->name != 'Closed')
-        <form action="{{ route('admin.tickets.close', $ticket->id) }}" method="POST" class="mt-4">
-            @csrf
-            @method('PATCH')
-            <button type="submit" class="btn btn-danger">
-                <i class="bi bi-x-circle"></i> Close Ticket
-            </button>
-        </form>
-    @else
-        <div class="alert alert-info mt-4">
-            This ticket is already closed.
-        </div>
-    @endif
 
     {{-- ✅ Back --}}
     <div class="mt-4">

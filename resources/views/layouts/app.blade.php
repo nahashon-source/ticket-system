@@ -14,19 +14,20 @@
     {{-- Bootstrap CSS CDN --}}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    {{-- Tailwind + App CSS via Vite --}}
+    {{-- Vite (for Tailwind CSS + JS if used) --}}
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-    {{-- Optional Bootstrap JS (if needed for dropdowns/modals) --}}
+    {{-- Bootstrap JS Bundle (for dropdowns, modals, etc.) --}}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
-
 </head>
+
 <body class="font-sans antialiased bg-gray-100">
 
-    {{-- Navigation --}}
-    @include('layouts.navigation')
+    {{-- ✅ Optional Navigation --}}
+    {{-- Remove this include if you don’t want navigation globally --}}
+    {{-- @include('layouts.navigation') --}}
 
-    {{-- Page Heading --}}
+    {{-- ✅ Optional Page Header --}}
     @hasSection('header')
         <header class="bg-white shadow">
             <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
@@ -35,17 +36,35 @@
         </header>
     @endif
 
-    {{-- Page Content --}}
+    {{-- ✅ Page Content --}}
     <main class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-         {{-- ✅ Success Flash Message --}}
-        @if (session('success'))
-            <div class="alert alert-success alert-dismissible fade show mt-2" role="alert">
-                {{ session('success') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        @endif
+
+            {{-- ✅ Flash Messages (you can move these to specific views if preferred) --}}
+            @if (session('success'))
+                <div class="alert alert-success alert-dismissible fade show mt-2" role="alert">
+                    {{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
+
+            @if (session('info'))
+                <div class="alert alert-info alert-dismissible fade show mt-2" role="alert">
+                    {{ session('info') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
+
+            @if (session('error'))
+                <div class="alert alert-danger alert-dismissible fade show mt-2" role="alert">
+                    {{ session('error') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
+
+            {{-- ✅ View Content --}}
             @yield('content')
+
         </div>
     </main>
 

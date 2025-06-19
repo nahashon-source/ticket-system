@@ -15,7 +15,7 @@ class AuthServiceProvider extends ServiceProvider
      * The policy mappings for the application.
      */
     protected $policies = [
-        \App\Models\Ticket::class => \App\Policies\TicketPolicy::class,
+        Ticket::class => \App\Policies\TicketPolicy::class,
 
     ];
 

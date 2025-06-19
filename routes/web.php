@@ -51,8 +51,6 @@ Route::middleware(['web'])->group(function () {
         }
     });
 
-    Route::get('/tickets/status/{status}', [TicketController::class, 'filterByStatus'])->name('tickets.filter.status');
-
     Route::get('/debug-auth', function() {
         if (Auth::check()) {
             $user = Auth::user();

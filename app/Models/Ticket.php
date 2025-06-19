@@ -56,6 +56,7 @@ class Ticket extends Model
         'status_id',
         'assigned_user_id',
         'user_id',
+        'agent_id',
     ];
 
     // Renamed 'use' method to 'user' to avoid PHP reserved word

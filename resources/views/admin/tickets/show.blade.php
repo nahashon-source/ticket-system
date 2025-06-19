@@ -34,24 +34,26 @@
         <span class="text-muted">{{ $ticket->agent ? $ticket->agent->name : 'Unassigned' }}</span>
     </div>
 
-    {{-- ✅ Status Update for Admin --}}
+    {{-- ✅ Status Update --}}
     @if(Auth::user()->role === 'admin')
-        <div class="mb-3 mt-4">
-            <h5>Update Status</h5>
-            <form action="{{ route('admin.tickets.updateStatus', $ticket->id) }}" method="POST" class="d-flex align-items-center gap-2">
-                @csrf
-                @method('PATCH')
-                <select name="status_id" class="form-select w-auto">
-                    @foreach($statuses as $status)
-                        <option value="{{ $status->id }}" {{ $ticket->status_id == $status->id ? 'selected' : '' }}>
-                            {{ $status->name }}
-                        </option>
-                    @endforeach
-                </select>
-                <button type="submit" class="btn btn-primary btn-sm">Update</button>
-            </form>
-        </div>
+    <div class="mb-3 mt-4">
+        <h5>Update Status</h5>
+        <form action="{{ route('admin.tickets.updateStatus', $ticket->id) }}" method="POST" class="d-flex align-items-center gap-2">
+            @csrf
+            @method('PATCH')
+            <select name="status_id" class="form-select w-auto">
+                @foreach($statuses as $status)
+                    <option value="{{ $status->id }}" {{ $ticket->status_id == $status->id ? 'selected' : '' }}>
+                        {{ $status->name }}
+                    </option>
+                @endforeach
+            </select>
+            <button type="submit" class="btn btn-primary btn-sm">Update</button>
+        </form>
+    </div>
     @endif
+
+    {{-- ✅ Assign Agent --}}
     @if(Auth::user()->role === 'admin')
     <div class="mb-3 mt-4">
         <h5>Assign Agent</h5>
@@ -60,7 +62,7 @@
             @method('PATCH')
             <select name="agent_id" class="form-select w-auto">
                 <option value="">Unassigned</option>
-                @foreach(\App\Models\User::where('role', 'agent')->get() as $agent)
+                @foreach($agents as $agent)
                     <option value="{{ $agent->id }}" {{ $ticket->agent_id == $agent->id ? 'selected' : '' }}>
                         {{ $agent->name }}
                     </option>
@@ -69,9 +71,7 @@
             <button type="submit" class="btn btn-success btn-sm">Assign</button>
         </form>
     </div>
-@endif
-
-
+    @endif
 
     {{-- ✅ Back --}}
     <div class="mt-4">
@@ -79,5 +79,6 @@
             <i class="bi bi-arrow-left"></i> Back to Dashboard
         </a>
     </div>
+
 </div>
 @endsection

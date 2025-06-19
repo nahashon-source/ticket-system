@@ -17,6 +17,8 @@ class TicketController extends Controller
     public function index()
     {
         $tickets = Ticket::latest()->paginate(10);
+        $tickets = Ticket::with(['status', 'agent'])->latest()->get();
+
         return view('admin.tickets.index', compact('tickets'));
     }
 
@@ -47,9 +49,11 @@ class TicketController extends Controller
     {
         $ticket = Ticket::findOrFail($id);
         $statuses = Status::all();
+        $agents = User::where('role', 'agent')->get();
 
 
-        return view('admin.tickets.show', compact('ticket', 'statuses'));
+
+        return view('admin.tickets.show', compact('ticket', 'statuses', 'agents'));
     }
 
     public function edit($id)
@@ -146,6 +150,9 @@ public function filterByStatus($statusId)
 
 public function assignAgent(AssignAgentRequest $request, Ticket $ticket)
 {
+    $this->authorize('assign', $ticket);
+
+    // If already assigned, show a message
     if ($ticket->agent_id === $request->agent_id) {
         return back()->with('info', 'This agent is already assigned.');
     }

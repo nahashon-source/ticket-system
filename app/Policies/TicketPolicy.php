@@ -63,4 +63,10 @@ class TicketPolicy
     {
         return false;
     }
+
+    public function assign(User $user, Ticket $ticket)
+{
+    return $user->role === 'admin';
+}
+
 }

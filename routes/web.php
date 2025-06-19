@@ -13,7 +13,7 @@ use App\Http\Controllers\{
     TestController,
     AdminDashboardController,
     Auth\AuthenticatedSessionController,
-    Auth\RegisteredUserController
+    Auth\RegisteredUserController,
 };
 
 // ====================
@@ -47,9 +47,10 @@ Route::middleware(['web'])->group(function () {
             $user = Auth::user();
             return 'Simple Login SUCCESS! User: ' . $user->name . ' (' . $user->email . ') - Role: ' . $user->role;
         } else {
-            return 'Simple Login FAILED! Email: ' . $request->email . ' Password Length: ' . strlen($request->password);
+            return 'Simple Login FAILED!';
         }
     });
+
     Route::get('/tickets/status/{status}', [TicketController::class, 'filterByStatus'])->name('tickets.filter.status');
 
     Route::get('/debug-auth', function() {
@@ -69,25 +70,8 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // User Ticket Routes
-    Route::get('/tickets', [TicketController::class, 'index'])->name('tickets.index');
-    Route::get('/tickets/create', [TicketController::class, 'create'])->name('tickets.create');
-    Route::post('/tickets', [TicketController::class, 'store'])->name('tickets.store');
-    Route::get('/tickets/{ticket}', [TicketController::class, 'show'])->name('tickets.show');
-    Route::get('/tickets/{ticket}/edit', [TicketController::class, 'edit'])->name('tickets.edit');
-    Route::put('/tickets/{ticket}', [TicketController::class, 'update'])->name('tickets.update');
-    Route::delete('/tickets/{ticket}', [TicketController::class, 'destroy'])->name('tickets.destroy');
-
-    // Ticket filters for authenticated users
-    Route::get('/tickets/status/{statusId}', [TicketController::class, 'filterByStatus'])->name('tickets.filter.status');
-    Route::get('/tickets/priority/{priorityId}', [TicketController::class, 'filterByPriority'])->name('tickets.filter.priority');
-    Route::get('/tickets/high-priority', [TicketController::class, 'highPriority'])->name('tickets.highPriority');
-
-    // User-specific management routes
-    Route::prefix('user')->name('user.')->group(function () {
-        Route::get('/categories', [CategoryController::class, 'categories'])->name('categories');
-        Route::get('/priorities', [PriorityController::class, 'priorities'])->name('priorities');
-        Route::get('/labels', [LabelController::class, 'labels'])->name('labels');
-    });
+    Route::resource('tickets', TicketController::class);
+    Route::get('/tickets/status/{status}', [TicketController::class, 'filterByStatus'])->name('tickets.filter.status');
 
     // Comments
     Route::resource('comments', CommentController::class)->only(['store', 'destroy']);
@@ -110,10 +94,9 @@ Route::middleware(['web', 'auth', 'is_admin'])->prefix('admin')->name('admin.')-
     // Ticket actions for admin
     Route::patch('/tickets/{ticket}/close', [\App\Http\Controllers\Admin\TicketController::class, 'close'])->name('tickets.close');
     Route::patch('/tickets/{ticket}/status', [\App\Http\Controllers\Admin\TicketController::class, 'updateStatus'])->name('tickets.updateStatus');
-    Route::get('/tickets/status/{status}', [TicketController::class, 'filterByStatus'])->name('tickets.filter.status');
+    Route::patch('/tickets/{ticket}/assign', [\App\Http\Controllers\Admin\TicketController::class, 'assignAgent'])->name('tickets.assignAgent');
 
-
-    // ✅ High Priority tickets for admin (this one is correct)
+    // High Priority tickets for admin
     Route::get('/tickets/high-priority', [\App\Http\Controllers\Admin\TicketController::class, 'highPriority'])->name('tickets.highPriority');
 
     // Admin category, priority, label, user management
@@ -121,8 +104,6 @@ Route::middleware(['web', 'auth', 'is_admin'])->prefix('admin')->name('admin.')-
     Route::resource('priorities', \App\Http\Controllers\Admin\PriorityController::class);
     Route::resource('labels', LabelController::class);
     Route::resource('users', \App\Http\Controllers\Admin\UserController::class)->except(['create', 'store']);
-    Route::resource('tickets', \App\Http\Controllers\Admin\TicketController::class)->only(['show']);
-
 });
 
 // ====================

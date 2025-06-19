@@ -52,6 +52,25 @@
             </form>
         </div>
     @endif
+    @if(Auth::user()->role === 'admin')
+    <div class="mb-3 mt-4">
+        <h5>Assign Agent</h5>
+        <form action="{{ route('admin.tickets.assignAgent', $ticket->id) }}" method="POST" class="d-flex align-items-center gap-2">
+            @csrf
+            @method('PATCH')
+            <select name="agent_id" class="form-select w-auto">
+                <option value="">Unassigned</option>
+                @foreach(\App\Models\User::where('role', 'agent')->get() as $agent)
+                    <option value="{{ $agent->id }}" {{ $ticket->agent_id == $agent->id ? 'selected' : '' }}>
+                        {{ $agent->name }}
+                    </option>
+                @endforeach
+            </select>
+            <button type="submit" class="btn btn-success btn-sm">Assign</button>
+        </form>
+    </div>
+@endif
+
 
 
     {{-- ✅ Back --}}

@@ -9,6 +9,8 @@ use App\Models\Ticket;
 use App\Models\Status;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\AssignAgentRequest;
+
 
 class TicketController extends Controller
 {
@@ -142,7 +144,19 @@ public function filterByStatus($statusId)
     return view('admin.tickets.index', compact('tickets', 'status'));
 }
 
-  
+public function assignAgent(AssignAgentRequest $request, Ticket $ticket)
+{
+    if ($ticket->agent_id === $request->agent_id) {
+        return back()->with('info', 'This agent is already assigned.');
+    }
+
+    $ticket->update([
+        'agent_id' => $request->agent_id
+    ]);
+
+    return redirect()->route('admin.tickets.show', $ticket)
+        ->with('success', 'Agent assigned successfully.');
+}
 
 
 }

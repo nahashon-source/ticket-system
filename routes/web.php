@@ -50,6 +50,7 @@ Route::middleware(['web'])->group(function () {
             return 'Simple Login FAILED! Email: ' . $request->email . ' Password Length: ' . strlen($request->password);
         }
     });
+    Route::get('/tickets/status/{status}', [TicketController::class, 'filterByStatus'])->name('tickets.filter.status');
 
     Route::get('/debug-auth', function() {
         if (Auth::check()) {

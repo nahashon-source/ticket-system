@@ -10,6 +10,8 @@ use App\Models\Status;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\AssignAgentRequest;
+use Illuminate\Support\Facades\Gate;
+
 
 
 class TicketController extends Controller
@@ -148,22 +150,27 @@ public function filterByStatus($statusId)
     return view('admin.tickets.index', compact('tickets', 'status'));
 }
 
+
+  
 public function assignAgent(AssignAgentRequest $request, Ticket $ticket)
 {
-    $this->authorize('assign', $ticket);
+    if (Gate::denies('assign', $ticket)) {
+        abort(403, 'Unauthorized action.');
+    }
 
-    // If already assigned, show a message
-    if ($ticket->agent_id === $request->agent_id) {
+    $validated = $request->validated();
+
+    // If already assigned to this agent
+    if ($ticket->agent_id == $validated['agent_id']) {
         return back()->with('info', 'This agent is already assigned.');
     }
 
+    // Update the ticket
     $ticket->update([
-        'agent_id' => $request->agent_id
+        'agent_id' => $validated['agent_id']
     ]);
 
     return redirect()->route('admin.tickets.show', $ticket)
-        ->with('success', 'Agent assigned successfully.');
+        ->with('success', 'Agent assigned successfully.'); 
 }
-
-
 }

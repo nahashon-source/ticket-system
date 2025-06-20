@@ -52,12 +52,11 @@
         </form>
     </div>
     @endif
-
     {{-- ✅ Assign Agent --}}
-    @if(Auth::user()->role === 'admin')
+@if(Auth::user()->role === 'admin')
     <div class="mb-3 mt-4">
         <h5>Assign Agent</h5>
-        <form action="{{ route('admin.tickets.assignAgent', $ticket->id) }}" method="POST" class="d-flex align-items-center gap-2">
+        <form action="{{ route('admin.tickets.assignAgent', $ticket->id) }}" method="POST" class="d-flex gap-2">
             @csrf
             @method('PATCH')
             <select name="agent_id" class="form-select w-auto">
@@ -71,7 +70,10 @@
             <button type="submit" class="btn btn-success btn-sm">Assign</button>
         </form>
     </div>
-    @endif
+@endif
+
+
+ 
 
     {{-- ✅ Back --}}
     <div class="mt-4">

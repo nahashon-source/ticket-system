@@ -13,7 +13,7 @@ use App\Http\Controllers\{
     TestController,
     AdminDashboardController,
     Auth\AuthenticatedSessionController,
-    Auth\RegisteredUserController,
+    Auth\RegisteredUserController
 };
 
 // ====================
@@ -89,12 +89,12 @@ Route::middleware(['web', 'auth', 'is_admin'])->prefix('admin')->name('admin.')-
     // Admin Ticket Management
     Route::resource('tickets', \App\Http\Controllers\Admin\TicketController::class);
 
-    // Ticket actions for admin
+    // Custom Ticket actions for admin
     Route::patch('/tickets/{ticket}/close', [\App\Http\Controllers\Admin\TicketController::class, 'close'])->name('tickets.close');
     Route::patch('/tickets/{ticket}/status', [\App\Http\Controllers\Admin\TicketController::class, 'updateStatus'])->name('tickets.updateStatus');
     Route::patch('/tickets/{ticket}/assign', [\App\Http\Controllers\Admin\TicketController::class, 'assignAgent'])->name('tickets.assignAgent');
 
-    // High Priority tickets for admin
+    // High Priority tickets
     Route::get('/tickets/high-priority', [\App\Http\Controllers\Admin\TicketController::class, 'highPriority'])->name('tickets.highPriority');
 
     // Admin category, priority, label, user management

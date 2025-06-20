@@ -35,14 +35,21 @@ class TicketController extends Controller
         $validator = Validator::make($request->all(), [
             'title'       => 'required|string|max:255',
             'description' => 'required|string',
-            'agent_id'    => 'nullable|exists:users,id',
+            // 'agent_id'    => 'nullable|exists:users,id',
         ]);
 
         if ($validator->fails()) {
             return back()->withErrors($validator)->withInput();
         }
+        Ticket::create([
+            'title'       => $request->title,
+            'description' => $request->description,
+            'priority_id' => $request->priority_id,   // if applicable, or set a default
+            'status_id'   => 1, // for example, Open
+            'user_id'     => Auth::id(), // the creator of the ticket
+            'agent_id'    => null, // unassigned initially
+        ]);
 
-        Ticket::create($request->only('title', 'description', 'agent_id'));
 
         return redirect()->route('admin.tickets.index')->with('success', 'Ticket created successfully.');
     }

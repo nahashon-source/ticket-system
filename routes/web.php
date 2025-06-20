@@ -92,7 +92,7 @@ Route::middleware(['web', 'auth', 'is_admin'])->prefix('admin')->name('admin.')-
     // Custom Ticket actions for admin
     Route::patch('/tickets/{ticket}/close', [\App\Http\Controllers\Admin\TicketController::class, 'close'])->name('tickets.close');
     Route::patch('/tickets/{ticket}/status', [\App\Http\Controllers\Admin\TicketController::class, 'updateStatus'])->name('tickets.updateStatus');
-    Route::patch('/tickets/{ticket}/assign', [\App\Http\Controllers\Admin\TicketController::class, 'assignAgent'])->name('admin.tickets.assignAgent');
+    Route::patch('/tickets/{ticket}/assign', [\App\Http\Controllers\Admin\TicketController::class, 'assignAgent'])->name('tickets.assignAgent');
 
     // High Priority tickets
     Route::get('/tickets/high-priority', [\App\Http\Controllers\Admin\TicketController::class, 'highPriority'])->name('tickets.highPriority');

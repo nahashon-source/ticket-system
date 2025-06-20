@@ -68,12 +68,6 @@
     @endforeach
 </select>
 
-    
- 
-
-
-
-          
             <button type="submit" class="btn btn-success btn-sm">Assign</button>
         </form>
     </div>

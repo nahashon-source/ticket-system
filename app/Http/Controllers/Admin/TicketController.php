@@ -175,7 +175,8 @@ public function assignAgent(Request $request, Ticket $ticket)
     }
 
     // 4. Update the agent assignment
-    $ticket->update(['agent_id' => $request->agent_id]);
+    $ticket->update([
+        'agent_id' => $request->agent_id]);
 
     // 5. Redirect back to show with success
     return redirect()

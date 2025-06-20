@@ -81,7 +81,7 @@ Route::middleware(['web', 'auth'])->group(function () {
 });
 
 // ====================
-// Admin-only Routes
+// Admin-only Routes 
 // ====================
 Route::middleware(['web', 'auth', 'is_admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
@@ -92,7 +92,7 @@ Route::middleware(['web', 'auth', 'is_admin'])->prefix('admin')->name('admin.')-
     // Custom Ticket actions for admin
     Route::patch('/tickets/{ticket}/close', [\App\Http\Controllers\Admin\TicketController::class, 'close'])->name('tickets.close');
     Route::patch('/tickets/{ticket}/status', [\App\Http\Controllers\Admin\TicketController::class, 'updateStatus'])->name('tickets.updateStatus');
-    Route::patch('/tickets/{ticket}/assign', [\App\Http\Controllers\Admin\TicketController::class, 'assignAgent'])->name('tickets.assignAgent');
+    Route::patch('/tickets/{ticket}/assign', [\App\Http\Controllers\Admin\TicketController::class, 'assignAgent'])->name('admin.tickets.assignAgent');
 
     // High Priority tickets
     Route::get('/tickets/high-priority', [\App\Http\Controllers\Admin\TicketController::class, 'highPriority'])->name('tickets.highPriority');
@@ -100,7 +100,7 @@ Route::middleware(['web', 'auth', 'is_admin'])->prefix('admin')->name('admin.')-
     // Admin category, priority, label, user management
     Route::resource('categories', CategoryController::class);
     Route::resource('priorities', \App\Http\Controllers\Admin\PriorityController::class);
-    Route::resource('labels', LabelController::class);
+    Route::resource('labels', \App\Http\Controllers\Admin\LabelController::class);
     Route::resource('users', \App\Http\Controllers\Admin\UserController::class)->except(['create', 'store']);
 });
 

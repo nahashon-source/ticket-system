@@ -60,13 +60,20 @@
             @csrf
             @method('PATCH')
             <select name="agent_id" class="form-select w-auto">
-                <option value="">Unassigned</option>
-                @foreach($agents as $agent)
-                    <option value="{{ $agent->id }}" {{ $ticket->agent_id == $agent->id ? 'selected' : '' }}>
-                        {{ $agent->name }}
-                    </option>
-                @endforeach
-            </select>
+    <option value="">Unassigned</option>
+    @foreach($agents as $agent)
+        <option value="{{ $agent->id }}" {{ $ticket->agent_id == $agent->id ? 'selected' : '' }}>
+            {{ $agent->name }}
+        </option>
+    @endforeach
+</select>
+
+    
+ 
+
+
+
+          
             <button type="submit" class="btn btn-success btn-sm">Assign</button>
         </form>
     </div>

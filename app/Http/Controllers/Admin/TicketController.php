@@ -152,25 +152,36 @@ public function filterByStatus($statusId)
 
 
   
-public function assignAgent(AssignAgentRequest $request, Ticket $ticket)
+
+public function assignAgent(Request $request, Ticket $ticket)
 {
-    if (Gate::denies('assign', $ticket)) {
+    // 1. Authorization
+    if (!Auth::check() || Auth::user()->role !== 'admin') {
         abort(403, 'Unauthorized action.');
     }
 
-    $validated = $request->validated();
+    // 2. Validate input
+    $validator = Validator::make($request->all(), [
+        'agent_id' => 'nullable|exists:users,id',
+    ]);
 
-    // If already assigned to this agent
-    if ($ticket->agent_id == $validated['agent_id']) {
+    if ($validator->fails()) {
+        return back()->withErrors($validator)->withInput();
+    }
+
+    // 3. If already the same agent, inform
+    if ($ticket->agent_id == $request->agent_id) {
         return back()->with('info', 'This agent is already assigned.');
     }
 
-    // Update the ticket
-    $ticket->update([
-        'agent_id' => $validated['agent_id']
-    ]);
+    // 4. Update the agent assignment
+    $ticket->update(['agent_id' => $request->agent_id]);
 
-    return redirect()->route('admin.tickets.show', $ticket)
-        ->with('success', 'Agent assigned successfully.'); 
+    // 5. Redirect back to show with success
+    return redirect()
+        ->route('admin.tickets.show', $ticket)
+        ->with('success', 'Agent assigned successfully.');
 }
+
+
 }

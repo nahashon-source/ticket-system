@@ -15,7 +15,7 @@ class AssignAgentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'agent_id' => 'nullable|exists:users,id',
+            'assigned_user_id' => 'nullable|exists:users,id',
         ];
     }
 }

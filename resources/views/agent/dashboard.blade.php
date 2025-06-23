@@ -1,27 +1,31 @@
-@extends('layouts.app')
+@extends('layouts.agent')
 
 @section('content')
-<div class="container">
-    <h2 class="text-2xl font-bold mb-6">Agent Dashboard</h2>
+    <h2 class="text-2xl font-bold mb-6 text-gray-800">Agent Dashboard</h2>
 
-    <div class="flex space-x-4 mt-5">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {{-- Total Tickets --}}
         <a href="{{ route('agent.tickets.index') }}" 
-           class="block bg-blue-600 text-white p-6 rounded-lg shadow w-1/3 hover:bg-blue-700 transition">
-            <h3 class="text-lg font-semibold mb-2">Total Tickets</h3>
-            <p class="text-4xl">{{ $ticketCount }}</p>
+           class="flex flex-col items-center justify-center bg-blue-600 text-white p-6 rounded-lg shadow hover:bg-blue-700 transition duration-200">
+            <div class="text-5xl mb-3">🎟️</div>
+            <h3 class="text-lg font-semibold mb-1">Total Tickets</h3>
+            <p class="text-3xl font-bold">{{ $ticketCount }}</p>
         </a>
 
-        <a href="{{ route('agent.tickets.index', ['status' => 'Open']) }}" 
-           class="block bg-yellow-500 text-white p-6 rounded-lg shadow w-1/3 hover:bg-yellow-600 transition">
-            <h3 class="text-lg font-semibold mb-2">Open Tickets</h3>
-            <p class="text-4xl">{{ $openCount }}</p>
+        {{-- Open Tickets --}}
+        <a href="{{ route('agent.tickets.filter.status', 'Open') }}" 
+           class="flex flex-col items-center justify-center bg-yellow-500 text-white p-6 rounded-lg shadow hover:bg-yellow-600 transition duration-200">
+            <div class="text-5xl mb-3">📬</div>
+            <h3 class="text-lg font-semibold mb-1">Open Tickets</h3>
+            <p class="text-3xl font-bold">{{ $openCount }}</p>
         </a>
 
-        <a href="{{ route('agent.tickets.index', ['status' => 'Closed']) }}" 
-           class="block bg-green-600 text-white p-6 rounded-lg shadow w-1/3 hover:bg-green-700 transition">
-            <h3 class="text-lg font-semibold mb-2">Closed Tickets</h3>
-            <p class="text-4xl">{{ $closedCount }}</p>
+        {{-- Closed Tickets --}}
+        <a href="{{ route('agent.tickets.filter.status', 'Closed') }}" 
+           class="flex flex-col items-center justify-center bg-green-600 text-white p-6 rounded-lg shadow hover:bg-green-700 transition duration-200">
+            <div class="text-5xl mb-3">✅</div>
+            <h3 class="text-lg font-semibold mb-1">Closed Tickets</h3>
+            <p class="text-3xl font-bold">{{ $closedCount }}</p>
         </a>
     </div>
-</div>
 @endsection

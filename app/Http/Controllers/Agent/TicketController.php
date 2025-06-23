@@ -26,15 +26,8 @@ class TicketController extends Controller
 
     public function show($id)
     {
-        $ticket = Ticket::with(['comments.user', 'status', 'priority', 'user'])->find($id);
+        $ticket = Ticket::with(['status', 'priority', 'comments.user'])->findOrFail($id);
 
-        if (!$ticket) {
-            abort(404, 'Ticket not found.');
-        }
-
-        if (Auth::id() != $ticket->agent_id) {
-            abort(403, 'Unauthorized access — this ticket is not assigned to you.');
-        }
 
         return view('agent.tickets.show', compact('ticket'));
     }

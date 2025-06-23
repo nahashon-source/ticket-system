@@ -2,33 +2,40 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agent Panel - @yield('title', 'Dashboard')</title>
+    <title>Agent Panel | Ticket System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     @vite('resources/css/app.css')
 </head>
-<body class="bg-gray-100">
+<body class="bg-gray-100 text-gray-900">
 
-    {{-- Navbar --}}
-    <nav class="bg-blue-800 text-white px-6 py-4 flex justify-between items-center shadow">
-        <div class="flex items-center space-x-4">
-            <a href="{{ route('agent.dashboard') }}" class="text-2xl font-semibold">Agent Panel</a>
-            <a href="{{ route('agent.tickets.index') }}" class="hover:underline">Tickets</a>
-            <a href="{{ route('profile.edit') }}" class="hover:underline">My Profile</a>
-        </div>
+    {{-- Navigation Bar --}}
+    <nav class="bg-blue-600 text-white px-4 py-3 shadow sticky top-0 z-50">
+        <div class="container mx-auto flex flex-wrap justify-between items-center">
+            <h1 class="text-xl font-bold">🎛️ Agent Panel</h1>
 
-        <div class="flex items-center space-x-4">
-            <span>{{ auth()->user()->name }}</span>
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <button type="submit" class="hover:underline">Logout</button>
-            </form>
+            <div class="space-x-6 text-sm font-medium">
+                <a href="{{ route('agent.dashboard') }}" 
+                   class="hover:underline hover:text-blue-200 transition">📊 Dashboard</a>
+
+                <a href="{{ route('agent.tickets.index') }}" 
+                   class="hover:underline hover:text-blue-200 transition">🎟️ My Tickets</a>
+
+                <a href="{{ route('logout') }}"
+                   onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
+                   class="hover:underline hover:text-blue-200 transition">🚪 Logout</a>
+            </div>
         </div>
     </nav>
 
-    {{-- Main Content --}}
-    <main class="container mx-auto mt-6">
+    {{-- Page Content --}}
+    <div class="container mx-auto px-4 py-6">
         @yield('content')
-    </main>
+    </div>
+
+    {{-- Logout Form --}}
+    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">
+        @csrf
+    </form>
 
 </body>
 </html>

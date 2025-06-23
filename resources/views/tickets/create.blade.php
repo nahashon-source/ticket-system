@@ -42,21 +42,22 @@
                       class="mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-2">{{ old('description') }}</textarea>
         </div>
 
-        {{-- Priority & Status --}}
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-                <label for="priority_id" class="block text-sm font-medium text-gray-700">Priority <span class="text-red-500">*</span></label>
-                <select id="priority_id" name="priority_id" required
-                        class="mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-2">
-                    <option value="" disabled {{ old('priority_id') ? '' : 'selected' }}>Select priority</option>
-                    @foreach ($priorities as $priority)
-                        <option value="{{ $priority->id }}" {{ old('priority_id') == $priority->id ? 'selected' : '' }}>
-                            {{ ucfirst($priority->name) }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
+        {{-- Priority --}}
+        <div>
+            <label for="priority_id" class="block text-sm font-medium text-gray-700">Priority <span class="text-red-500">*</span></label>
+            <select id="priority_id" name="priority_id" required
+                    class="mt-1 block w-full rounded border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-2">
+                <option value="" disabled {{ old('priority_id') ? '' : 'selected' }}>Select priority</option>
+                @foreach ($priorities as $priority)
+                    <option value="{{ $priority->id }}" {{ old('priority_id') == $priority->id ? 'selected' : '' }}>
+                        {{ ucfirst($priority->name) }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
 
+        {{-- Status (Admin only) --}}
+        @if(auth()->user()->role === 'admin')
             <div>
                 <label for="status_id" class="block text-sm font-medium text-gray-700">Status <span class="text-red-500">*</span></label>
                 <select id="status_id" name="status_id" required
@@ -69,9 +70,9 @@
                     @endforeach
                 </select>
             </div>
-        </div>
+        @endif
 
-        {{-- Assign to agent (admin only) --}}
+        {{-- Assign to agent (Admin only) --}}
         @if(auth()->user()->role === 'admin')
             <div>
                 <label for="assigned_user_id" class="block text-sm font-medium text-gray-700">Assign To</label>

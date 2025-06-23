@@ -118,7 +118,9 @@ Route::middleware(['web', 'auth', 'is_admin'])->prefix('admin')->name('admin.')-
 Route::middleware(['web', 'auth', IsAgent::class])->prefix('agent')->name('agent.')->group(function () {
     Route::get('dashboard', [AgentDashboardController::class, 'index'])->name('dashboard');
     Route::resource('tickets', \App\Http\Controllers\Agent\TicketController::class);
-    Route::get('tickets/status/{status}', [\App\Http\Controllers\Agent\TicketController::class, 'filterByStatus'])->name('filter.status');
+    Route::get('tickets/status/{status}', [\App\Http\Controllers\Agent\TicketController::class, 'filterByStatus'])->name('tickets.filter.status');
+    Route::post('/tickets/{ticket}/comments', [AgentCommentController::class, 'store'])
+    ->name('comments.store');
 
 
 });

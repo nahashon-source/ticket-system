@@ -89,14 +89,26 @@ public function store(Request $request)
         'files.*'           => ['file', 'max:2048'],
     ])->validate();
 
+    // $ticket = Ticket::create([
+    //     'title'             => $validated['title'],
+    //     'description'       => $validated['description'] ?? 'No description provided',
+    //     'priority_id'       => $validated['priority_id'] ?? Priority::first()->id,
+    //     'status_id'         => $validated['status_id'] ?? Status::first()->id,
+    //     'assigned_user_id'  => $validated['assigned_user_id'] ?? null,
+    //     'user_id'           => Auth::id(),
+    // ]);
+
     $ticket = Ticket::create([
         'title'             => $validated['title'],
         'description'       => $validated['description'] ?? 'No description provided',
         'priority_id'       => $validated['priority_id'] ?? Priority::first()->id,
-        'status_id'         => $validated['status_id'] ?? Status::first()->id,
+        'status_id'         => (Auth::user()->role === 'admin' && isset($validated['status_id']))
+                                ? $validated['status_id']
+                                : Status::where('name', 'Open')->first()->id,
         'assigned_user_id'  => $validated['assigned_user_id'] ?? null,
         'user_id'           => Auth::id(),
     ]);
+    
 
     $ticket->categories()->sync($validated['categories'] ?? []);
     $ticket->labels()->sync($validated['labels'] ?? []);

@@ -30,7 +30,7 @@
                 </thead>
                 <tbody>
                     @foreach($tickets as $ticket)
-                    <tr>
+                    <tr class="align-middle">
                         <td>
                             <a href="{{ route('tickets.show', $ticket->id) }}" class="text-decoration-none text-primary fw-semibold">
                                 {{ $ticket->title }}
@@ -67,7 +67,7 @@
             </table>
         </div>
 
-        <div class="mt-4">
+        <div class="mt-4" aria-label="Pagination">
             {{ $tickets->links() }}
         </div>
     @endif

@@ -1,8 +1,8 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('content')
-<div class="container">
-    <h2 class="mb-4">Ticket Details</h2>
+<div class="container my-4">
+    <h2 class="mb-4">🎫 Ticket Details</h2>
 
     {{-- Ticket Info --}}
     <div class="mb-3">
@@ -34,11 +34,11 @@
         <span class="text-muted">{{ $ticket->agent ? $ticket->agent->name : 'Unassigned' }}</span>
     </div>
 
-    {{-- ✅ Status Update --}}
+    {{-- Status Update --}}
     @if(Auth::user()->role === 'admin')
-    <div class="mb-3 mt-4">
+    <div class="mb-4">
         <h5>Update Status</h5>
-        <form action="{{ route('admin.tickets.updateStatus', $ticket->id) }}" method="POST" class="d-flex align-items-center gap-2">
+        <form action="{{ route('admin.tickets.updateStatus', $ticket->id) }}" method="POST" class="d-flex flex-wrap align-items-center gap-2">
             @csrf
             @method('PATCH')
             <select name="status_id" class="form-select w-auto">
@@ -52,10 +52,10 @@
         </form>
     </div>
 
-    {{-- ✅ Assign Agent --}}
-    <div class="mb-3 mt-4">
+    {{-- Assign Agent --}}
+    <div class="mb-4">
         <h5>Assign Agent</h5>
-        <form action="{{ route('admin.tickets.assignAgent', $ticket->id) }}" method="POST" class="d-flex gap-2">
+        <form action="{{ route('admin.tickets.assignAgent', $ticket->id) }}" method="POST" class="d-flex flex-wrap gap-2">
             @csrf
             @method('PATCH')
             <select name="agent_id" class="form-select w-auto">
@@ -70,31 +70,33 @@
         </form>
     </div>
     @endif
-<!-- Comments List -->
-<h4>Comments ({{ $ticket->comments->count() }})</h4>
-@if($ticket->comments->isNotEmpty())
-    @foreach($ticket->comments as $comment)
-        <div class="mb-3">
-            <strong>{{ $comment->user->name }}</strong>
-            <small class="text-muted">{{ $comment->created_at->diffForHumans() }}</small>
-            <p>{{ $comment->body }}</p>
-        </div>
-    @endforeach
-@else
-    <p>No comments yet.</p>
-@endif
 
-<!-- Add Comment Form -->
-<form method="POST" action="{{ route('admin.tickets.comments.store', $ticket) }}">
-    @csrf
-    <div class="mb-3">
-        <textarea name="body" rows="3" class="form-control" placeholder="Write your comment..." required></textarea>
+    {{-- Comments List --}}
+    <div class="mb-4">
+        <h5>Comments ({{ $ticket->comments->count() }})</h5>
+        @if($ticket->comments->isNotEmpty())
+            @foreach($ticket->comments as $comment)
+                <div class="border rounded p-3 mb-3 bg-white">
+                    <strong>{{ $comment->user->name }}</strong>
+                    <small class="text-muted"> • {{ $comment->created_at->diffForHumans() }}</small>
+                    <p class="mt-2 mb-0">{{ $comment->body }}</p>
+                </div>
+            @endforeach
+        @else
+            <p class="text-muted">No comments yet.</p>
+        @endif
     </div>
-    <button type="submit" class="btn btn-primary">Post Comment</button>
-</form>
 
+    {{-- Add Comment Form --}}
+    <form method="POST" action="{{ route('admin.tickets.comments.store', $ticket) }}">
+        @csrf
+        <div class="mb-3">
+            <textarea name="body" rows="3" class="form-control" placeholder="Write your comment..." required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Post Comment</button>
+    </form>
 
-    {{-- ✅ Back --}}
+    {{-- Back --}}
     <div class="mt-4">
         <a href="{{ route('admin.dashboard') }}" class="btn btn-secondary">
             <i class="bi bi-arrow-left"></i> Back to Dashboard

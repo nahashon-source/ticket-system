@@ -11,15 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('comments', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInter('ticket_id');
-            $table->unsignedBigInter('user_id');
-            $table->text('body');
-            $table->timestamps();
+        Schema::table('comments', function (Blueprint $table) {
+            //
+            $table->unsignedBigInteger('user_id')->after('ticket_id');
 
-            //Foreign key constraints
-            $table->foreign('ticket_id')->references('id')->on('tickets')->onDelete('cascade');
+            // If you have a users table and want to enforce a foreign key
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
@@ -29,6 +25,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('comments');
+        Schema::table('comments', function (Blueprint $table) {
+            //
+            $table->dropForeign(['user_id']);
+            $table->dropColumn('user_id');
+        });
     }
 };

@@ -111,4 +111,9 @@ class User extends Authenticatable
     {
         return $this->role === $role;
     }
+    public function assignedTickets()
+{
+    return $this->hasMany(\App\Models\Ticket::class, 'agent_id');
+}
+
 }

@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;  // Fixed the typo here
+use App\Models\Comment;
+
 
 /**
  * 
@@ -126,5 +128,10 @@ class Ticket extends Model
                     $q->where('category_id', $request->category)
                 )
             );
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(comment::class);
     }
 }

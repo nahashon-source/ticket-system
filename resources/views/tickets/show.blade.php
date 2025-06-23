@@ -18,7 +18,34 @@
         </div>
     </div>
 
-    <a href="{{ route('tickets.index') }}" class="btn btn-secondary">Back to Tickets</a>
+    {{-- ✅ Comments Section --}}
+    <div class="mt-5">
+        <h4>Comments</h4>
+
+        @forelse($ticket->comments as $comment)
+            <div class="card mb-2">
+                <div class="card-body">
+                    <strong>{{ $comment->user->name }}</strong>
+                    <small class="text-muted">{{ $comment->created_at->diffForHumans() }}</small>
+                    <p class="mt-2">{{ $comment->body }}</p>
+                </div>
+            </div>
+        @empty
+            <p class="text-muted">No comments yet.</p>
+        @endforelse
+
+        {{-- Add New Comment --}}
+        <h5 class="mt-4">Add a Comment</h5>
+        <form action="{{ route('comments.store', $ticket) }}" method="POST">
+            @csrf
+            <div class="mb-3">
+                <textarea name="body" rows="3" class="form-control" placeholder="Write your comment..." required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Post Comment</button>
+        </form>
+    </div>
+
+    <a href="{{ route('tickets.index') }}" class="btn btn-secondary mt-4">Back to Tickets</a>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

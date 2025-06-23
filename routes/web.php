@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Middleware\IsAgent;
+
 use App\Http\Controllers\{
     TicketController,
     CategoryController,
@@ -12,8 +14,12 @@ use App\Http\Controllers\{
     DashboardController,
     TestController,
     AdminDashboardController,
+    Agent\AgentDashboardController,
+    Admin\AdminCommentController,
+    Agent\AgentCommentController,
     Auth\AuthenticatedSessionController,
     Auth\RegisteredUserController
+    
 };
 
 // ====================
@@ -29,6 +35,9 @@ Route::middleware(['web'])->group(function () {
             return 'Login FAILED!';
         }
     });
+
+
+    
 
     Route::get('/simple-login', function() {
         return '
@@ -93,6 +102,8 @@ Route::middleware(['web', 'auth', 'is_admin'])->prefix('admin')->name('admin.')-
     Route::patch('/tickets/{ticket}/close', [\App\Http\Controllers\Admin\TicketController::class, 'close'])->name('tickets.close');
     Route::patch('/tickets/{ticket}/status', [\App\Http\Controllers\Admin\TicketController::class, 'updateStatus'])->name('tickets.updateStatus');
     Route::patch('/tickets/{ticket}/assign', [\App\Http\Controllers\Admin\TicketController::class, 'assignAgent'])->name('tickets.assignAgent');
+    Route::post('/tickets/{ticket}/comments', [AdminCommentController::class, 'store'])->name('tickets.comments.store');
+
 
     // High Priority tickets
     Route::get('/tickets/high-priority', [\App\Http\Controllers\Admin\TicketController::class, 'highPriority'])->name('tickets.highPriority');
@@ -102,6 +113,14 @@ Route::middleware(['web', 'auth', 'is_admin'])->prefix('admin')->name('admin.')-
     Route::resource('priorities', \App\Http\Controllers\Admin\PriorityController::class);
     Route::resource('labels', \App\Http\Controllers\Admin\LabelController::class);
     Route::resource('users', \App\Http\Controllers\Admin\UserController::class)->except(['create', 'store']);
+});
+
+Route::middleware(['web', 'auth', IsAgent::class])->prefix('agent')->name('agent.')->group(function () {
+    Route::get('dashboard', [AgentDashboardController::class, 'index'])->name('dashboard');
+    Route::resource('tickets', \App\Http\Controllers\Agent\TicketController::class);
+    Route::get('tickets/status/{status}', [\App\Http\Controllers\Agent\TicketController::class, 'filterByStatus'])->name('filter.status');
+
+
 });
 
 // ====================

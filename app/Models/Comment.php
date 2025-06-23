@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * 
@@ -22,5 +23,23 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Comment extends Model
 {
+    use HasFactory;
     //
+    protected $fillable =[
+        'ticket_id',
+        'user_id',
+        'body',
+    ];
+
+    //Relationship: a comment belongs to a ticket
+    public function ticket()
+    {
+        return $this->belongsTo(Ticket::class);
+    }
+
+    //Relationship: a comment belongs to a user(who authored it)
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
